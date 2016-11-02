@@ -28,7 +28,6 @@ Environment Variable|Example value|Description|
 ``DEBUG``|true|If debug messages should be enabled.|
 ``DATABASE_URL``|mysql://USER:PASSWORD@HOST:PORT/NAME|Connection to the database (MySQL).|
 ``SECRET_KEY``|Any random and secure text.|Key used to sign coockies.|
-
 ``AZURE_ACCOUNT_NAME``||Azure Storage Account name.|
 ``AZURE_ACCOUNT_KEY``||Private key that gives your Django app access to your Azure Account.|
 ``AZURE_CONTAINER``|static|This is where the files uploaded through your Django app will be uploaded. .|
