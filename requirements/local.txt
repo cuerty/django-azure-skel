@@ -1,0 +1,5 @@
+-r base.txt
+
+Fabric==1.12.0
+flake8==2.5.4
+yapf==0.7.0

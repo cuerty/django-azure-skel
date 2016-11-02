@@ -1,0 +1,4 @@
+-r base.txt
+
+django-storages==1.4.1
+gunicorn==19.4.5

@@ -1,0 +1,76 @@
+mysql:
+  image: mysql:5.5
+  environment:
+    MYSQL_ROOT_PASSWORD: changeme
+    MYSQL_DATABASE: changeme
+    MYSQL_USER: changeme
+    MYSQL_PASSWORD: changeme
+  volumes:
+    # If you are using boot2docker, mysql data has to live in the VM for now until #581 is fixed
+    # for more info see here: https://github.com/boot2docker/boot2docker/issues/581
+    - /data/dev/changeme/mysql:/var/lib/mysql
+  ports:
+      - "3306:3306"
+
+redis:
+  image: redis:3
+  ports:
+    - "6379:6379"
+
+mail:
+  image: mailhog/mailhog
+  ports:
+    - "8025:8025"
+
+celeryworker:
+  dockerfile: Dockerfile
+  build: .
+  command: celery -A changeme.celery_app worker -l DEBUG --autoreload
+  volumes:
+    - ./changeme:/app
+  environment:
+    DEBUG: 'true'
+    DATABASE_URL: mysql://changeme:changeme@mysql:3306/changeme
+    CACHE_URL: rediscache://redis:6379/0
+    BROKER_URL: redis://redis:6379/1
+  links:
+    - mysql
+    - redis
+    - mail
+
+celeryflower:
+  dockerfile: Dockerfile
+  build: .
+  command: celery -A changeme.celery_app flower --port=5555
+  volumes:
+    - ./changeme:/app
+  environment:
+    DEBUG: 'true'
+    DATABASE_URL: mysql://changeme:changeme@mysql:3306/changeme
+    CACHE_URL: rediscache://redis:6379/0
+    BROKER_URL: redis://redis:6379/1
+  ports:
+      - "5555:5555"
+  links:
+    - mysql
+    - redis
+    - mail
+
+django:
+  dockerfile: Dockerfile
+  build: .
+  command: bash -c "npm install && grunt serve"
+  volumes:
+    - ./changeme:/app
+  environment:
+    DEBUG: 'true'
+    DATABASE_URL: mysql://changeme:changeme@mysql:3306/changeme
+    CACHE_URL: rediscache://redis:6379/0
+    BROKER_URL: redis://redis:6379/1
+    ROOT_URLCONF: changeme.urls.www
+  ports:
+      - "8000:8000"
+  links:
+    - mysql
+    - redis
+    - mail
